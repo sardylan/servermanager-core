@@ -1,11 +1,12 @@
 package org.thehellnet.onlinegaming.servermanager.core.model.persistence;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
 @Table(name = "game")
-public class Game {
+public class Game implements Serializable {
 
     @Id
     @Column(name = "id", updatable = false, nullable = false, unique = true)
