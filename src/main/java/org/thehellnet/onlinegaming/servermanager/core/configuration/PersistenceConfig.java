@@ -64,15 +64,13 @@ public class PersistenceConfig {
         Properties properties = new Properties();
         properties.put("hibernate.dialect", org.hibernate.dialect.PostgreSQL95Dialect.class.getName());
         properties.put("hibernate.show_sql", false);
-        properties.put("hibernate.hbm2ddl.auto", "validate");
+        properties.put("hibernate.hbm2ddl.auto", "update");
         properties.put("hibernate.c3p0.min_size", 2);
         properties.put("hibernate.c3p0.max_size", 20);
         properties.put("hibernate.c3p0.timeout", 30);
         properties.put("hibernate.c3p0.max_statements", 60);
 //        properties.put("hibernate.enable_lazy_load_no_trans", true);
         properties.put("jadira.usertype.autoRegisterUserTypes", "true");
-        properties.put("jadira.usertype.javaZone", "UTC");
-        properties.put("hibernate.jdbc.time_zone", "UTC");
         return properties;
     }
 }
