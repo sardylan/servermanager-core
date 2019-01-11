@@ -14,8 +14,8 @@ apply plugin: "groovy"
 apply plugin: "idea"
 apply plugin: "war"
 
-sourceCompatibility = 1.10
-targetCompatibility = 1.10
+sourceCompatibility = 1.11
+targetCompatibility = 1.11
 
 war {
     archiveFileName = "servermanager-core.war"
