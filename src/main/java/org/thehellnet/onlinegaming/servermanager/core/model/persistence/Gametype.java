@@ -7,35 +7,26 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "game")
-public class Game implements Serializable {
+@Table(name = "gametype")
+public class Gametype implements Serializable {
 
     @Id
     @Column(name = "id", updatable = false, nullable = false, unique = true)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "game_id_seq")
-    @SequenceGenerator(name = "game_id_seq", sequenceName = "game_id_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gametype_id_seq")
+    @SequenceGenerator(name = "gametype_id_seq", sequenceName = "gametype_id_seq")
     private Long id;
 
     @Basic
-    @Column(name = "tag", nullable = false, unique = true)
-    private String tag;
-
-    @Basic
-    @Column(name = "name")
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "game", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @OneToMany(mappedBy = "gametype", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private Set<GameGametype> gameGametypes = new HashSet<>();
 
-    public Game() {
+    public Gametype() {
     }
 
-    public Game(String tag) {
-        this.tag = tag;
-    }
-
-    public Game(String tag, String name) {
-        this.tag = tag;
+    public Gametype(String name) {
         this.name = name;
     }
 
@@ -45,14 +36,6 @@ public class Game implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getTag() {
-        return tag;
-    }
-
-    public void setTag(String tag) {
-        this.tag = tag;
     }
 
     public String getName() {
@@ -75,20 +58,19 @@ public class Game implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Game game = (Game) o;
-        return id.equals(game.id) &&
-                tag.equals(game.tag) &&
-                Objects.equals(name, game.name) &&
-                gameGametypes.equals(game.gameGametypes);
+        Gametype gametype = (Gametype) o;
+        return id.equals(gametype.id) &&
+                name.equals(gametype.name) &&
+                gameGametypes.equals(gametype.gameGametypes);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, tag);
+        return Objects.hash(id, name);
     }
 
     @Override
     public String toString() {
-        return name != null ? name : tag;
+        return name;
     }
 }
