@@ -29,6 +29,9 @@ public class GameMap implements Serializable {
     @JoinColumn(name = "game_id", nullable = false)
     private Game game;
 
+    public GameMap() {
+    }
+
     public GameMap(String tag) {
         this.tag = tag;
     }
