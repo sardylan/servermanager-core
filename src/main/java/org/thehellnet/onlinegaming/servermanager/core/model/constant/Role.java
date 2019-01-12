@@ -1,0 +1,17 @@
+package org.thehellnet.onlinegaming.servermanager.core.model.constant;
+
+public enum Role {
+    LOGIN("Can login for get tokens"),
+    READ_PUBLIC("Can read public data");
+
+    private String description;
+
+    Role(String description) {
+        this.description = description;
+    }
+
+    @Override
+    public String toString() {
+        return description;
+    }
+}

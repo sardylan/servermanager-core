@@ -14,6 +14,8 @@ public final class TokenUtility {
     private static final int OFFSET = 19;
     private static final int LENGTH = 16;
 
+    private static final int EXIPRATION_DAYS = 1;
+
     private static final Logger logger = LoggerFactory.getLogger(TokenUtility.class);
 
     public static String generate() {
@@ -39,6 +41,10 @@ public final class TokenUtility {
     }
 
     public static DateTime generateExpiration(DateTime creationDateTime) {
-        return creationDateTime.plusDays(1);
+        return creationDateTime.plusDays(EXIPRATION_DAYS);
+    }
+
+    public static boolean validateExpiration(DateTime expirationDateTime) {
+        return expirationDateTime.isAfterNow();
     }
 }

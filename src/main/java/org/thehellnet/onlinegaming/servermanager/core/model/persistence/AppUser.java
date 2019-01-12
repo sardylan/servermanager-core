@@ -1,5 +1,7 @@
 package org.thehellnet.onlinegaming.servermanager.core.model.persistence;
 
+import org.thehellnet.onlinegaming.servermanager.core.model.constant.Role;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -27,12 +29,11 @@ public class AppUser implements Serializable {
     @OneToMany(mappedBy = "appUser", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private Set<AppUserToken> appUserTokens = new HashSet<>();
 
-    @ManyToMany
-    @JoinTable(name = "appuser_appuserrole",
-            joinColumns = @JoinColumn(name = "appuser_id"),
-            inverseJoinColumns = @JoinColumn(name = "appuserrole_id")
-    )
-    private Set<AppUserRole> appUserRoles = new HashSet<>();
+    @ElementCollection(targetClass = Role.class)
+    @JoinTable(name = "appuser_role", joinColumns = @JoinColumn(name = "appuser_id"))
+    @Column(name = "role", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Set<Role> appUserRoles = new HashSet<>();
 
     public AppUser() {
     }
@@ -74,11 +75,11 @@ public class AppUser implements Serializable {
         this.appUserTokens = appUserTokens;
     }
 
-    public Set<AppUserRole> getAppUserRoles() {
+    public Set<Role> getAppUserRoles() {
         return appUserRoles;
     }
 
-    public void setAppUserRoles(Set<AppUserRole> appUserRoles) {
+    public void setAppUserRoles(Set<Role> appUserRoles) {
         this.appUserRoles = appUserRoles;
     }
 
@@ -89,7 +90,7 @@ public class AppUser implements Serializable {
         AppUser appUser = (AppUser) o;
         return id.equals(appUser.id) &&
                 email.equals(appUser.email) &&
-                password.equals(appUser.password) &&
+                Objects.equals(password, appUser.password) &&
                 appUserTokens.equals(appUser.appUserTokens) &&
                 appUserRoles.equals(appUser.appUserRoles);
     }

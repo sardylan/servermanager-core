@@ -7,6 +7,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.thehellnet.onlinegaming.servermanager.core.model.constant.Role;
 import org.thehellnet.onlinegaming.servermanager.core.model.persistence.*;
 import org.thehellnet.onlinegaming.servermanager.core.repository.*;
 import org.thehellnet.utility.PasswordUtility;
@@ -57,16 +58,14 @@ public class Initialization {
     private final GameGametypeRepository gameGametypeRepository;
     private final GameMapRepository gameMapRepository;
     private final AppUserRepository appUserRepository;
-    private final AppUserRoleRepository appUserRoleRepository;
 
     @Autowired
-    public Initialization(GameRepository gameRepository, GametypeRepository gametypeRepository, GameGametypeRepository gameGametypeRepository, GameMapRepository gameMapRepository, AppUserRepository appUserRepository, AppUserRoleRepository appUserRoleRepository) {
+    public Initialization(GameRepository gameRepository, GametypeRepository gametypeRepository, GameGametypeRepository gameGametypeRepository, GameMapRepository gameMapRepository, AppUserRepository appUserRepository) {
         this.gameRepository = gameRepository;
         this.gametypeRepository = gametypeRepository;
         this.gameGametypeRepository = gameGametypeRepository;
         this.gameMapRepository = gameMapRepository;
         this.appUserRepository = appUserRepository;
-        this.appUserRoleRepository = appUserRoleRepository;
     }
 
     @EventListener(ContextRefreshedEvent.class)
@@ -86,7 +85,6 @@ public class Initialization {
 
         checkAppUsers();
         checkAppUserRoles();
-        checkAppUserRolesAssignment();
 
         logger.info("Database data initialization complete");
     }
@@ -399,30 +397,15 @@ public class Initialization {
     }
 
     private void checkAppUserRoles() {
-        logger.debug("Checking user roles");
-
-        Map<String, String> roleMap = new HashMap<>();
-        roleMap.put("login", "Can login");
-
-        for (String tag : roleMap.keySet()) {
-            AppUserRole appUserRole = appUserRoleRepository.findByTag(tag);
-            if (appUserRole == null) {
-                appUserRoleRepository.save(new AppUserRole(tag, roleMap.get(tag)));
-            }
-        }
-    }
-
-    private void checkAppUserRolesAssignment() {
         logger.debug("Checking user roles assigment");
 
-        Map<String, String[]> userRoleMap = new HashMap<>();
-        userRoleMap.put("admin", new String[]{"login"});
+        Map<String, Role[]> userRoleMap = new HashMap<>();
+        userRoleMap.put("admin", new Role[]{Role.LOGIN, Role.READ_PUBLIC});
 
         for (String userEmail : userRoleMap.keySet()) {
             AppUser appUser = appUserRepository.findByEmail(userEmail);
-            for (String roleTag : userRoleMap.get(userEmail)) {
-                AppUserRole appUserRole = appUserRoleRepository.findByTag(roleTag);
-                appUser.getAppUserRoles().add(appUserRole);
+            for (Role role : userRoleMap.get(userEmail)) {
+                appUser.getAppUserRoles().add(role);
             }
             appUserRepository.save(appUser);
         }

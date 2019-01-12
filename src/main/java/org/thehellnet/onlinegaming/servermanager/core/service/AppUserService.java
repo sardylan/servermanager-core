@@ -3,6 +3,7 @@ package org.thehellnet.onlinegaming.servermanager.core.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thehellnet.onlinegaming.servermanager.core.model.constant.Role;
 import org.thehellnet.onlinegaming.servermanager.core.model.persistence.AppUser;
 import org.thehellnet.onlinegaming.servermanager.core.model.persistence.AppUserToken;
 import org.thehellnet.onlinegaming.servermanager.core.repository.AppUserRepository;
@@ -10,6 +11,8 @@ import org.thehellnet.onlinegaming.servermanager.core.repository.AppUserTokenRep
 import org.thehellnet.utility.EmailUtility;
 import org.thehellnet.utility.PasswordUtility;
 import org.thehellnet.utility.TokenUtility;
+
+import java.util.Arrays;
 
 @Service
 public class AppUserService {
@@ -50,4 +53,11 @@ public class AppUserService {
         String token = TokenUtility.generate();
         return appUserTokenRepository.save(new AppUserToken(token, appUser));
     }
+
+    @Transactional(readOnly = true)
+    public boolean hasRoles(AppUser appUser, Role... roles) {
+        appUser = appUserRepository.getOne(appUser.getId());
+        return appUser.getAppUserRoles().containsAll(Arrays.asList(roles));
+    }
+
 }
