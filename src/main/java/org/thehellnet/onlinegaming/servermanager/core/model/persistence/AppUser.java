@@ -2,7 +2,9 @@ package org.thehellnet.onlinegaming.servermanager.core.model.persistence;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "appuser")
@@ -21,6 +23,9 @@ public class AppUser implements Serializable {
     @Basic
     @Column(name = "password", nullable = false)
     private String password;
+
+    @OneToMany(mappedBy = "appUser", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private Set<AppUserToken> appUserTokens = new HashSet<>();
 
     public AppUser() {
     }
@@ -54,6 +59,14 @@ public class AppUser implements Serializable {
         this.password = password;
     }
 
+    public Set<AppUserToken> getAppUserTokens() {
+        return appUserTokens;
+    }
+
+    public void setAppUserTokens(Set<AppUserToken> appUserTokens) {
+        this.appUserTokens = appUserTokens;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -61,7 +74,8 @@ public class AppUser implements Serializable {
         AppUser appUser = (AppUser) o;
         return id.equals(appUser.id) &&
                 email.equals(appUser.email) &&
-                password.equals(appUser.password);
+                password.equals(appUser.password) &&
+                appUserTokens.equals(appUser.appUserTokens);
     }
 
     @Override
