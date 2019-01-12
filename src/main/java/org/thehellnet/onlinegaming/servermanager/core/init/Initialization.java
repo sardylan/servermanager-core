@@ -6,20 +6,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.thehellnet.onlinegaming.servermanager.core.model.persistence.AppUser;
 import org.thehellnet.onlinegaming.servermanager.core.model.persistence.Game;
 import org.thehellnet.onlinegaming.servermanager.core.model.persistence.GameGametype;
 import org.thehellnet.onlinegaming.servermanager.core.model.persistence.Gametype;
+import org.thehellnet.onlinegaming.servermanager.core.repository.AppUserRepository;
 import org.thehellnet.onlinegaming.servermanager.core.repository.GameGametypeRepository;
 import org.thehellnet.onlinegaming.servermanager.core.repository.GameRepository;
 import org.thehellnet.onlinegaming.servermanager.core.repository.GametypeRepository;
-import org.thehellnet.onlinegaming.servermanager.core.repository.AppUserRepository;
 import org.thehellnet.utility.PasswordUtility;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Component
+@Transactional
 public class Initialization {
 
     private static final String GAMETYPE_DEATHMATCH = "Deathmatch";

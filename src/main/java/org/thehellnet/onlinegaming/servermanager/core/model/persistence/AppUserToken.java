@@ -1,6 +1,7 @@
 package org.thehellnet.onlinegaming.servermanager.core.model.persistence;
 
 import org.joda.time.DateTime;
+import org.thehellnet.utility.TokenUtility;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -26,7 +27,21 @@ public class AppUserToken implements Serializable {
 
     @Basic
     @Column(name = "creation_datetime", nullable = false)
-    private DateTime creationDatetime = new DateTime();
+    private DateTime creationDateTime = new DateTime();
+
+    @Basic
+    @Column(name = "expiration_datetime")
+    private DateTime expirationDateTime;
+
+    public AppUserToken() {
+        expirationDateTime = TokenUtility.generateExpiration(creationDateTime);
+    }
+
+    public AppUserToken(String token, AppUser appUser) {
+        this();
+        this.token = token;
+        this.appUser = appUser;
+    }
 
     public Long getId() {
         return id;
@@ -52,12 +67,20 @@ public class AppUserToken implements Serializable {
         this.appUser = appUser;
     }
 
-    public DateTime getCreationDatetime() {
-        return creationDatetime;
+    public DateTime getCreationDateTime() {
+        return creationDateTime;
     }
 
-    public void setCreationDatetime(DateTime creationDatetime) {
-        this.creationDatetime = creationDatetime;
+    public void setCreationDateTime(DateTime creationDatetime) {
+        this.creationDateTime = creationDatetime;
+    }
+
+    public DateTime getExpirationDateTime() {
+        return expirationDateTime;
+    }
+
+    public void setExpirationDateTime(DateTime expirationDateTime) {
+        this.expirationDateTime = expirationDateTime;
     }
 
     @Override
@@ -68,7 +91,8 @@ public class AppUserToken implements Serializable {
         return id.equals(that.id) &&
                 token.equals(that.token) &&
                 appUser.equals(that.appUser) &&
-                creationDatetime.equals(that.creationDatetime);
+                creationDateTime.equals(that.creationDateTime) &&
+                Objects.equals(expirationDateTime, that.expirationDateTime);
     }
 
     @Override
