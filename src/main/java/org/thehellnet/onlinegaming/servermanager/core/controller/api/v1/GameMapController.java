@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.thehellnet.onlinegaming.servermanager.core.controller.api.v1.aspect.CheckRoles;
+import org.thehellnet.onlinegaming.servermanager.core.controller.api.v1.aspect.CheckToken;
 import org.thehellnet.onlinegaming.servermanager.core.model.constant.Role;
 import org.thehellnet.onlinegaming.servermanager.core.model.dto.JsonResponse;
 import org.thehellnet.onlinegaming.servermanager.core.model.dto.request.token.GameMapListDTO;
@@ -15,8 +17,6 @@ import org.thehellnet.onlinegaming.servermanager.core.model.persistence.Game;
 import org.thehellnet.onlinegaming.servermanager.core.model.persistence.GameMap;
 import org.thehellnet.onlinegaming.servermanager.core.repository.GameMapRepository;
 import org.thehellnet.onlinegaming.servermanager.core.repository.GameRepository;
-import org.thehellnet.onlinegaming.servermanager.core.service.AppUserService;
-import org.thehellnet.onlinegaming.servermanager.core.service.AppUserTokenService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,15 +27,11 @@ import java.util.Map;
 @RequestMapping(path = "/api/v1/public/gamemap")
 public class GameMapController {
 
-    private final AppUserTokenService appUserTokenService;
-    private final AppUserService appUserService;
     private final GameRepository gameRepository;
     private final GameMapRepository gameMapRepository;
 
     @Autowired
-    public GameMapController(AppUserTokenService appUserTokenService, AppUserService appUserService, GameRepository gameRepository, GameMapRepository gameMapRepository) {
-        this.appUserTokenService = appUserTokenService;
-        this.appUserService = appUserService;
+    public GameMapController(GameRepository gameRepository, GameMapRepository gameMapRepository) {
         this.gameRepository = gameRepository;
         this.gameMapRepository = gameMapRepository;
     }
@@ -46,17 +42,10 @@ public class GameMapController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
+    @CheckToken
+    @CheckRoles(Role.READ_PUBLIC)
     @ResponseBody
-    public JsonResponse list(@RequestBody GameMapListDTO dto) {
-        AppUser appUser = appUserTokenService.getAppUserByToken(dto.token);
-        if (appUser == null) {
-            return JsonResponse.getErrorInstance("Token not enabled");
-        }
-
-        if (!appUserService.hasRoles(appUser, Role.READ_PUBLIC)) {
-            return JsonResponse.getErrorInstance("User doesn't have permissions");
-        }
-
+    public JsonResponse list(AppUser appUser, @RequestBody GameMapListDTO dto) {
         List<GameMap> gameMaps = new ArrayList<>();
 
         if (dto.gameTag != null) {
@@ -64,7 +53,6 @@ public class GameMapController {
             if (game == null) {
                 return JsonResponse.getErrorInstance("Game tag not found");
             }
-
             gameMaps.addAll(gameMapRepository.findByGame(game));
         } else {
             gameMaps.addAll(gameMapRepository.findAll());
