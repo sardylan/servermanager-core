@@ -6,12 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.thehellnet.onlinegaming.servermanager.core.model.persistence.AppUser;
 import org.thehellnet.onlinegaming.servermanager.core.model.persistence.Game;
 import org.thehellnet.onlinegaming.servermanager.core.model.persistence.GameGametype;
 import org.thehellnet.onlinegaming.servermanager.core.model.persistence.Gametype;
 import org.thehellnet.onlinegaming.servermanager.core.repository.GameGametypeRepository;
 import org.thehellnet.onlinegaming.servermanager.core.repository.GameRepository;
 import org.thehellnet.onlinegaming.servermanager.core.repository.GametypeRepository;
+import org.thehellnet.onlinegaming.servermanager.core.repository.AppUserRepository;
+import org.thehellnet.utility.PasswordUtility;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,12 +52,14 @@ public class Initialization {
     private final GameRepository gameRepository;
     private final GametypeRepository gametypeRepository;
     private final GameGametypeRepository gameGametypeRepository;
+    private final AppUserRepository appUserRepository;
 
     @Autowired
-    public Initialization(GameRepository gameRepository, GametypeRepository gametypeRepository, GameGametypeRepository gameGametypeRepository) {
+    public Initialization(GameRepository gameRepository, GametypeRepository gametypeRepository, GameGametypeRepository gameGametypeRepository, AppUserRepository appUserRepository) {
         this.gameRepository = gameRepository;
         this.gametypeRepository = gametypeRepository;
         this.gameGametypeRepository = gameGametypeRepository;
+        this.appUserRepository = appUserRepository;
     }
 
     @EventListener(ContextRefreshedEvent.class)
@@ -70,6 +75,8 @@ public class Initialization {
         checkGames();
         checkGametypes();
         checkGameGametypes();
+
+        checkUsers();
 
         logger.info("Database data initialization complete");
     }
@@ -197,11 +204,28 @@ public class Initialization {
         persistGameGametypes(gametypeTags, "codwaw");
     }
 
+    private void checkUsers() {
+        logger.debug("Checking users");
+
+        Map<String, String> userMap = new HashMap<>();
+        userMap.put("admin", "admin");
+
+        for (String username : userMap.keySet()) {
+            AppUser appUser = appUserRepository.findByEmail(username);
+            if (appUser == null) {
+                String password = userMap.get(username);
+                String hashedPassword = PasswordUtility.hash(password);
+                appUser = new AppUser(username, hashedPassword);
+                appUserRepository.save(appUser);
+            }
+        }
+    }
+
     private void persistGameGametypes(Map<String, String> gametypeTags, String gameTag) {
-        Gametype gametype;
         Game game = gameRepository.findByTag(gameTag);
+
         for (String gametypeTag : gametypeTags.keySet()) {
-            gametype = gametypeRepository.findByName(gametypeTag);
+            Gametype gametype = gametypeRepository.findByName(gametypeTag);
             if (gameGametypeRepository.findByGameAndGametype(game, gametype) == null) {
                 gameGametypeRepository.save(new GameGametype(game, gametype, gametypeTags.get(gametypeTag)));
             }
