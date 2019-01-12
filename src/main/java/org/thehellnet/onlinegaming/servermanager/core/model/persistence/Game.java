@@ -27,6 +27,9 @@ public class Game implements Serializable {
     @OneToMany(mappedBy = "game", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private Set<GameGametype> gameGametypes = new HashSet<>();
 
+    @OneToMany(mappedBy = "game", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private Set<GameMap> gameMaps = new HashSet<>();
+
     public Game() {
     }
 
@@ -71,6 +74,14 @@ public class Game implements Serializable {
         this.gameGametypes = gameGametypes;
     }
 
+    public Set<GameMap> getGameMaps() {
+        return gameMaps;
+    }
+
+    public void setGameMaps(Set<GameMap> gameMaps) {
+        this.gameMaps = gameMaps;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -79,7 +90,8 @@ public class Game implements Serializable {
         return id.equals(game.id) &&
                 tag.equals(game.tag) &&
                 Objects.equals(name, game.name) &&
-                gameGametypes.equals(game.gameGametypes);
+                gameGametypes.equals(game.gameGametypes) &&
+                gameMaps.equals(game.gameMaps);
     }
 
     @Override
