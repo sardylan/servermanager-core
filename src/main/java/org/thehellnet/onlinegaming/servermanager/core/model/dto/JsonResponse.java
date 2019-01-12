@@ -5,8 +5,8 @@ import java.util.Map;
 
 public class JsonResponse {
 
-    private boolean success;
-    private Object data;
+    private boolean success = true;
+    private Object data = null;
     private Map<String, Object> errors = new HashMap<>();
 
     private JsonResponse() {

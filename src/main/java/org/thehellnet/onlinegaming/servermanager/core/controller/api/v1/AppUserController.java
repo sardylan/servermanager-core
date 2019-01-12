@@ -33,9 +33,8 @@ public class AppUserController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public
     @ResponseBody
-    JsonResponse login(@RequestBody LoginRequestDTO dto) {
+    public JsonResponse login(@RequestBody LoginRequestDTO dto) {
         AppUser appUser = appUserService.findByEmailAndPassword(dto.email, dto.password);
         if (appUser == null) {
             return JsonResponse.getErrorInstance("User not found");
