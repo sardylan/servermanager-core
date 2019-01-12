@@ -57,13 +57,17 @@ public class GameMapController {
             return JsonResponse.getErrorInstance("User doesn't have permissions");
         }
 
-        List<GameMap> gameMaps = gameMapRepository.findAll();
+        List<GameMap> gameMaps = new ArrayList<>();
 
         if (dto.gameTag != null) {
             Game game = gameRepository.findByTag(dto.gameTag);
-            if (game != null) {
-                gameMaps = gameMapRepository.findByGame(game);
+            if (game == null) {
+                return JsonResponse.getErrorInstance("Game tag not found");
             }
+
+            gameMaps.addAll(gameMapRepository.findByGame(game));
+        } else {
+            gameMaps.addAll(gameMapRepository.findAll());
         }
 
         List<Map<String, String>> data = new ArrayList<>();
