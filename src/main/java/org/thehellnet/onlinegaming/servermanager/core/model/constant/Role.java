@@ -2,7 +2,8 @@ package org.thehellnet.onlinegaming.servermanager.core.model.constant;
 
 public enum Role {
     LOGIN("Can login for get tokens"),
-    READ_PUBLIC("Can read public data");
+    READ_PUBLIC("Can read public data"),
+    READ_PRIVATE("Can read private data");
 
     private String description;
 

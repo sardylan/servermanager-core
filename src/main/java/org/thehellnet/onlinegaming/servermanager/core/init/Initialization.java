@@ -400,7 +400,7 @@ public class Initialization {
         logger.debug("Checking user roles assigment");
 
         Map<String, Role[]> userRoleMap = new HashMap<>();
-        userRoleMap.put("admin", new Role[]{Role.LOGIN, Role.READ_PUBLIC});
+        userRoleMap.put("admin", new Role[]{Role.LOGIN, Role.READ_PUBLIC, Role.READ_PRIVATE});
 
         for (String userEmail : userRoleMap.keySet()) {
             AppUser appUser = appUserRepository.findByEmail(userEmail);
