@@ -11,6 +11,7 @@ import org.thehellnet.onlinegaming.servermanager.core.model.dto.JsonResponse;
 import org.thehellnet.onlinegaming.servermanager.core.model.dto.request.LoginRequestDTO;
 import org.thehellnet.onlinegaming.servermanager.core.model.persistence.AppUser;
 import org.thehellnet.onlinegaming.servermanager.core.model.persistence.AppUserToken;
+import org.thehellnet.onlinegaming.servermanager.core.service.AppUserRoleService;
 import org.thehellnet.onlinegaming.servermanager.core.service.AppUserService;
 
 import java.util.HashMap;
@@ -21,10 +22,12 @@ import java.util.Map;
 public class AppUserController {
 
     private final AppUserService appUserService;
+    private final AppUserRoleService appUserRoleRepository;
 
     @Autowired
-    public AppUserController(AppUserService appUserService) {
+    public AppUserController(AppUserService appUserService, AppUserRoleService appUserRoleRepository1) {
         this.appUserService = appUserService;
+        this.appUserRoleRepository = appUserRoleRepository1;
     }
 
     @RequestMapping(
@@ -38,6 +41,10 @@ public class AppUserController {
         AppUser appUser = appUserService.findByEmailAndPassword(dto.email, dto.password);
         if (appUser == null) {
             return JsonResponse.getErrorInstance("User not found");
+        }
+
+        if (!appUserRoleRepository.appUserHasRoleTag(appUser, "login")) {
+            return JsonResponse.getErrorInstance("User not enabled");
         }
 
         AppUserToken appUserToken = appUserService.newToken(appUser);

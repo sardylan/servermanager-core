@@ -7,14 +7,8 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.thehellnet.onlinegaming.servermanager.core.model.persistence.AppUser;
-import org.thehellnet.onlinegaming.servermanager.core.model.persistence.Game;
-import org.thehellnet.onlinegaming.servermanager.core.model.persistence.GameGametype;
-import org.thehellnet.onlinegaming.servermanager.core.model.persistence.Gametype;
-import org.thehellnet.onlinegaming.servermanager.core.repository.AppUserRepository;
-import org.thehellnet.onlinegaming.servermanager.core.repository.GameGametypeRepository;
-import org.thehellnet.onlinegaming.servermanager.core.repository.GameRepository;
-import org.thehellnet.onlinegaming.servermanager.core.repository.GametypeRepository;
+import org.thehellnet.onlinegaming.servermanager.core.model.persistence.*;
+import org.thehellnet.onlinegaming.servermanager.core.repository.*;
 import org.thehellnet.utility.PasswordUtility;
 
 import java.util.HashMap;
@@ -55,13 +49,15 @@ public class Initialization {
     private final GametypeRepository gametypeRepository;
     private final GameGametypeRepository gameGametypeRepository;
     private final AppUserRepository appUserRepository;
+    private final AppUserRoleRepository appUserRoleRepository;
 
     @Autowired
-    public Initialization(GameRepository gameRepository, GametypeRepository gametypeRepository, GameGametypeRepository gameGametypeRepository, AppUserRepository appUserRepository) {
+    public Initialization(GameRepository gameRepository, GametypeRepository gametypeRepository, GameGametypeRepository gameGametypeRepository, AppUserRepository appUserRepository, AppUserRoleRepository appUserRoleRepository) {
         this.gameRepository = gameRepository;
         this.gametypeRepository = gametypeRepository;
         this.gameGametypeRepository = gameGametypeRepository;
         this.appUserRepository = appUserRepository;
+        this.appUserRoleRepository = appUserRoleRepository;
     }
 
     @EventListener(ContextRefreshedEvent.class)
@@ -78,7 +74,9 @@ public class Initialization {
         checkGametypes();
         checkGameGametypes();
 
-        checkUsers();
+        checkAppUsers();
+        checkAppUserRoles();
+        checkAppUserRolesAssignment();
 
         logger.info("Database data initialization complete");
     }
@@ -206,20 +204,50 @@ public class Initialization {
         persistGameGametypes(gametypeTags, "codwaw");
     }
 
-    private void checkUsers() {
+    private void checkAppUsers() {
         logger.debug("Checking users");
 
         Map<String, String> userMap = new HashMap<>();
         userMap.put("admin", "admin");
 
-        for (String username : userMap.keySet()) {
-            AppUser appUser = appUserRepository.findByEmail(username);
+        for (String userEmail : userMap.keySet()) {
+            AppUser appUser = appUserRepository.findByEmail(userEmail);
             if (appUser == null) {
-                String password = userMap.get(username);
+                String password = userMap.get(userEmail);
                 String hashedPassword = PasswordUtility.hash(password);
-                appUser = new AppUser(username, hashedPassword);
+                appUser = new AppUser(userEmail, hashedPassword);
                 appUserRepository.save(appUser);
             }
+        }
+    }
+
+    private void checkAppUserRoles() {
+        logger.debug("Checking user roles");
+
+        Map<String, String> roleMap = new HashMap<>();
+        roleMap.put("login", "Can login");
+
+        for (String tag : roleMap.keySet()) {
+            AppUserRole appUserRole = appUserRoleRepository.findByTag(tag);
+            if (appUserRole == null) {
+                appUserRoleRepository.save(new AppUserRole(tag, roleMap.get(tag)));
+            }
+        }
+    }
+
+    private void checkAppUserRolesAssignment() {
+        logger.debug("Checking user roles assigment");
+
+        Map<String, String[]> userRoleMap = new HashMap<>();
+        userRoleMap.put("admin", new String[]{"login"});
+
+        for (String userEmail : userRoleMap.keySet()) {
+            AppUser appUser = appUserRepository.findByEmail(userEmail);
+            for (String roleTag : userRoleMap.get(userEmail)) {
+                AppUserRole appUserRole = appUserRoleRepository.findByTag(roleTag);
+                appUser.getAppUserRoles().add(appUserRole);
+            }
+            appUserRepository.save(appUser);
         }
     }
 

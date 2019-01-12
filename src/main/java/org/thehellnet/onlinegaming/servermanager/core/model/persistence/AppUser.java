@@ -27,6 +27,13 @@ public class AppUser implements Serializable {
     @OneToMany(mappedBy = "appUser", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private Set<AppUserToken> appUserTokens = new HashSet<>();
 
+    @ManyToMany
+    @JoinTable(name = "appuser_appuserrole",
+            joinColumns = @JoinColumn(name = "appuser_id"),
+            inverseJoinColumns = @JoinColumn(name = "appuserrole_id")
+    )
+    private Set<AppUserRole> appUserRoles = new HashSet<>();
+
     public AppUser() {
     }
 
@@ -67,6 +74,14 @@ public class AppUser implements Serializable {
         this.appUserTokens = appUserTokens;
     }
 
+    public Set<AppUserRole> getAppUserRoles() {
+        return appUserRoles;
+    }
+
+    public void setAppUserRoles(Set<AppUserRole> appUserRoles) {
+        this.appUserRoles = appUserRoles;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -75,7 +90,8 @@ public class AppUser implements Serializable {
         return id.equals(appUser.id) &&
                 email.equals(appUser.email) &&
                 password.equals(appUser.password) &&
-                appUserTokens.equals(appUser.appUserTokens);
+                appUserTokens.equals(appUser.appUserTokens) &&
+                appUserRoles.equals(appUser.appUserRoles);
     }
 
     @Override
