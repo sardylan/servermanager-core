@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Controller
-@RequestMapping(path = "/api/v1/public/appuser")
+@RequestMapping(path = "/api/v1/public/appUser")
 public class AppUserController {
 
     private final AppUserService appUserService;

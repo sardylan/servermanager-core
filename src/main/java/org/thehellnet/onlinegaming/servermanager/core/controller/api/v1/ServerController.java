@@ -55,6 +55,30 @@ public class ServerController {
         }
 
         return JsonResponse.getInstance(data);
-
     }
+
+//    @RequestMapping(
+//            path = "/changeMap",
+//            method = RequestMethod.POST,
+//            consumes = MediaType.APPLICATION_JSON_VALUE,
+//            produces = MediaType.APPLICATION_JSON_VALUE
+//    )
+//    @CheckToken
+//    @CheckRoles(Role.READ_PRIVATE)
+//    @ResponseBody
+//    public JsonResponse changeMap(AppUser appUser, @RequestBody ServerListDTO dto) {
+//        List<Server> servers = serverRepository.findAll();
+//
+//        List<Map<String, Object>> data = new ArrayList<>();
+//        for (Server server : servers) {
+//            Map<String, Object> mapData = new HashMap<>();
+//            mapData.put("name", server.getName());
+//            mapData.put("gameTag", server.getGame().getTag());
+//            mapData.put("address", server.getAddress());
+//            mapData.put("port", server.getPort());
+//            data.add(mapData);
+//        }
+//
+//        return JsonResponse.getInstance(data);
+//    }
 }

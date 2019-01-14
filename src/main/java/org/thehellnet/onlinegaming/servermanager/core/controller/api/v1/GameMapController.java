@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequestMapping(path = "/api/v1/public/gamemap")
+@RequestMapping(path = "/api/v1/public/gameMap")
 public class GameMapController {
 
     private final GameRepository gameRepository;
